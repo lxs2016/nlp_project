@@ -1,0 +1,45 @@
+# StoryWeaver 单一世界观设定（演示与评测用）
+# 与 Gradio 演示场景一致：村庄 — 洞穴 — 长老
+
+setting: |
+  边境村庄「石溪镇」依山傍河，多年平静。镇外北山有一处禁洞，传说洞内有古老封印；
+  村民未经长老许可不得入洞。近来河对岸出现异动，长老召集众人商议对策。
+
+characters:
+  - name: 陈长老
+    role:  village elder
+    traits: 稳重、守旧、重视传统与安全；不轻易允许进入禁洞。
+  - name: 阿秀
+    role:  young villager, scout
+    traits: 好奇、胆大，常去河边与北山附近查探。
+  - name: 铁匠老张
+    role:  blacksmith
+    traits: 寡言、务实，负责武器与农具。
+  - name: 外乡人
+    role:  mysterious stranger
+    traits: 数日前出现在镇口，来历不明，对禁洞表现兴趣。
+
+locations:
+  - name: 石溪镇广场
+    desc:  村中集会用，立有长老居所与告示牌。
+  - name: 北山禁洞
+    desc:  传说有封印，未经许可不得入内。
+  - name: 河边渡口
+    desc:  通往对岸的渡口，近日有人见过对岸火光。
+  - name: 铁匠铺
+    desc:  老张打铁处，可打听消息或置办装备。
+  - name: 镇口
+    desc:  外乡人常在此出现。
+
+rules_forbidden:
+  - 未经长老明确许可，任何人不得进入北山禁洞。
+  - 不得对长老或村民使用暴力（除非剧情明确进入战斗）。
+  - 关键抉择须符合角色动机，不可无理由背叛或突兀转变。
+
+main_conflict: |
+  河对岸异动与禁洞传说是否相关？村民应在长老带领下保守应对，还是有人冒险入洞或渡河查探？
+
+key_items:
+  - 长老手令（进入禁洞的许可）
+  - 火把 / 灯
+  - 渡船（渡口使用）

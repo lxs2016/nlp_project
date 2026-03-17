@@ -1,0 +1,13 @@
+# StoryWeaver data preparation & runtime
+huggingface_hub>=0.20.0
+pyyaml>=6.0
+
+# Algorithm / inference (intent, retriever, generator)
+torch>=2.0.0
+transformers>=4.36.0
+sentence-transformers>=2.2.0
+# Optional: LLM API for generator
+# openai>=1.0.0
+
+# Optional: Gradio UI
+# gradio>=4.0.0

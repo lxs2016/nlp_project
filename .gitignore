@@ -1,0 +1,72 @@
+# Byte-compiled / optimized / DLL
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment & secrets
+.env
+.env.local
+*.pem
+
+# IDE & editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Hugging Face / datasets cache（不提交缓存，可通过脚本重新拉取）
+.cache/
+
+# Model checkpoints & large binaries（训练产出，按需自行备份）
+*.pt
+*.pth
+*.bin
+*.ckpt
+checkpoints/
+outputs/
+runs/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# mypy
+.mypy_cache/
+
+# Optional: 若 data/raw 或 data/cleaned 体量过大，可取消注释按需忽略
+# data/raw/
+# data/cleaned/
