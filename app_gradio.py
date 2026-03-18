@@ -202,39 +202,146 @@ GAME_INSTRUCTIONS = """
 
 
 def build_ui() -> gr.Blocks:
-    with gr.Blocks(title="StoryWeaver", css=".err { color: #888; font-size: 0.9em; }") as app:
+    css = r"""
+    @import url('https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+    :root {
+      --sw-bg0: #0b0f17;
+      --sw-bg1: rgba(255, 255, 255, 0.05);
+      --sw-bg2: rgba(255, 255, 255, 0.08);
+      --sw-border: rgba(255, 255, 255, 0.10);
+      --sw-text: rgba(255, 255, 255, 0.88);
+      --sw-muted: rgba(255, 255, 255, 0.62);
+      --sw-faint: rgba(255, 255, 255, 0.45);
+      --sw-accent: #ffb86b;
+      --sw-accent2: #6ee7ff;
+      --sw-danger: #ff6b6b;
+      --sw-radius: 16px;
+      --sw-shadow: 0 18px 60px rgba(0,0,0,0.45);
+    }
+
+    body {
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(110,231,255,0.12), transparent 55%),
+                  radial-gradient(900px 700px at 80% 40%, rgba(255,184,107,0.10), transparent 60%),
+                  linear-gradient(180deg, var(--sw-bg0), #070a10);
+      color: var(--sw-text);
+    }
+
+    /* Keep it centered & calm */
+    .gradio-container { max-width: 1100px !important; }
+
+    /* Title */
+    #swTitle h2 { margin: 0.2rem 0 0.2rem 0; font-family: "Literata", ui-serif, Georgia, serif; letter-spacing: 0.2px; }
+    #swSub { color: var(--sw-muted); font-size: 0.95rem; margin-top: 0.2rem; }
+
+    /* Cards */
+    .swCard {
+      border: 1px solid var(--sw-border);
+      background: linear-gradient(180deg, var(--sw-bg1), rgba(255,255,255,0.03));
+      border-radius: var(--sw-radius);
+      box-shadow: var(--sw-shadow);
+    }
+
+    /* Narrative */
+    #swNarrative { padding: 14px 16px; }
+    #swNarrative p, #swNarrative li { font-family: "Literata", ui-serif, Georgia, serif; font-size: 1.02rem; line-height: 1.65; }
+    #swNarrative hr { border-color: rgba(255,255,255,0.10); }
+
+    /* Right panel */
+    #swPanel { padding: 14px 16px; }
+    #swPanel label { color: var(--sw-faint); font-size: 0.85rem; }
+    #swPanel textarea, #swPanel input { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+
+    /* Buttons */
+    .swChoice button {
+      border-radius: 14px !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      background: rgba(255,255,255,0.06) !important;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+      text-align: left !important;
+      padding: 12px 12px !important;
+      white-space: normal !important;
+      line-height: 1.25 !important;
+    }
+    .swChoice button:hover { transform: translateY(-1px); background: rgba(255,255,255,0.09) !important; border-color: rgba(255,255,255,0.18) !important; }
+
+    #swStart button {
+      background: linear-gradient(90deg, rgba(255,184,107,0.95), rgba(110,231,255,0.85)) !important;
+      color: #111 !important;
+      border-radius: 999px !important;
+      border: 0 !important;
+      font-weight: 650 !important;
+      padding: 10px 14px !important;
+    }
+    #swNewGame button {
+      border-radius: 999px !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      background: rgba(255,255,255,0.06) !important;
+    }
+
+    .err { color: var(--sw-danger); font-size: 0.92em; }
+    """
+
+    # Gradio 6+ moved `css` from Blocks() to launch(); we attach it to the app
+    # so both local `python app_gradio.py` and Spaces `app.py` can pass it at launch.
+    with gr.Blocks(title="StoryWeaver") as app:
         session_id = gr.State(value=None)
 
-        gr.Markdown("## StoryWeaver")
-        with gr.Accordion("游戏说明", open=True):
-            gr.Markdown(GAME_INSTRUCTIONS)
-        narrative = gr.Markdown(value=INITIAL_NARRATIVE, label="叙述")
         with gr.Row():
-            choice_1 = gr.Button(value="—", visible=False)
-            choice_2 = gr.Button(value="—", visible=False)
-            choice_3 = gr.Button(value="—", visible=False)
-            choice_4 = gr.Button(value="—", visible=False)
-        choice_buttons = [choice_1, choice_2, choice_3, choice_4]
+            gr.Markdown("## StoryWeaver", elem_id="swTitle")
+            gr.Markdown("一个轻量的互动叙事试玩", elem_id="swSub")
 
-        with gr.Row():
-            free_input = gr.Textbox(
-                placeholder="输入行动或选择上方按钮",
-                label="自由输入",
-                scale=4,
-            )
-            submit_btn = gr.Button("提交", scale=1)
+        with gr.Tabs():
+            with gr.Tab("开始游戏", id="play"):
+                with gr.Row(equal_height=True):
+                    with gr.Column(scale=7):
+                        narrative = gr.Markdown(
+                            value=INITIAL_NARRATIVE,
+                            elem_id="swNarrative",
+                            elem_classes=["swCard"],
+                        )
 
-        state_display = gr.Textbox(
-            value=INITIAL_STATE,
-            label="当前状态",
-            interactive=False,
-            lines=2,
-        )
-        error_display = gr.Markdown(value="", elem_classes=["err"])
-        new_game_btn = gr.Button("新游戏")
+                    with gr.Column(scale=5):
+                        with gr.Group(elem_id="swPanel", elem_classes=["swCard"]):
+                            # Start: user clicks to get first narration (no session yet)
+                            start_btn = gr.Button("开始", variant="primary", elem_id="swStart")
 
-        # Start: user clicks to get first narration (no session yet)
-        start_btn = gr.Button("开始", variant="primary")
+                            with gr.Accordion("操作", open=True):
+                                with gr.Row():
+                                    free_input = gr.Textbox(
+                                        placeholder="输入行动，例如：观察、交谈、调查、前往某地…",
+                                        label="自由输入",
+                                        scale=4,
+                                    )
+                                    submit_btn = gr.Button("提交", scale=1)
+
+                                # Choice buttons
+                                choice_1 = gr.Button(value="—", visible=False, elem_classes=["swChoice"])
+                                choice_2 = gr.Button(value="—", visible=False, elem_classes=["swChoice"])
+                                choice_3 = gr.Button(value="—", visible=False, elem_classes=["swChoice"])
+                                choice_4 = gr.Button(value="—", visible=False, elem_classes=["swChoice"])
+                                choice_buttons = [choice_1, choice_2, choice_3, choice_4]
+
+                            with gr.Accordion("状态与提示", open=False):
+                                state_display = gr.Textbox(
+                                    value=INITIAL_STATE,
+                                    label="当前状态",
+                                    interactive=False,
+                                    lines=3,
+                                )
+                                error_display = gr.Markdown(value="", elem_classes=["err"])
+
+                            new_game_btn = gr.Button("新游戏", elem_id="swNewGame")
+
+                with gr.Accordion("游戏说明（可折叠）", open=False):
+                    gr.Markdown(GAME_INSTRUCTIONS)
+
+            with gr.Tab("关于", id="about"):
+                gr.Markdown(
+                    "**StoryWeaver** 是一个基于世界观与当前状态动态生成叙述的互动小说试玩。"
+                    "\n\n- 叙述来自 LLM（通过 `OPENAI_*` 环境变量配置）"
+                    "\n- 意图识别/检索用于辅助规划与保持上下文一致性"
+                )
         start_btn.click(
             fn=on_start_click,
             inputs=[session_id],
@@ -249,10 +356,12 @@ def build_ui() -> gr.Blocks:
                 choice_3,
                 choice_4,
             ],
+            api_name=False,
         ).then(
             fn=lambda: gr.update(visible=False),
             inputs=[],
             outputs=[start_btn],
+            api_name=False,
         )
 
         # Choice clicks: each button sends its label as user_input (btn value passed via inputs)
@@ -270,6 +379,7 @@ def build_ui() -> gr.Blocks:
                     choice_3,
                     choice_4,
                 ],
+                api_name=False,
             )
 
         # Free input submit
@@ -289,6 +399,7 @@ def build_ui() -> gr.Blocks:
                 choice_3,
                 choice_4,
             ],
+            api_name=False,
         )
         free_input.submit(
             fn=on_submit,
@@ -303,6 +414,7 @@ def build_ui() -> gr.Blocks:
                 choice_3,
                 choice_4,
             ],
+            api_name=False,
         )
 
         # New game
@@ -321,14 +433,21 @@ def build_ui() -> gr.Blocks:
                 session_id,
             ],
         )
+            api_name=False,
+        )
 
+    setattr(app, "_storyweaver_css", css)
     return app
 
 
 def main() -> None:
     app = build_ui()
     port = int(os.environ.get("PORT", "7860"))
-    app.launch(server_name="0.0.0.0", server_port=port)
+    app.launch(
+        server_name="0.0.0.0",
+        server_port=port,
+        css=getattr(app, "_storyweaver_css", None),
+    )
 
 
 if __name__ == "__main__":

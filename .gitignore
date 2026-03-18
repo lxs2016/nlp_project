@@ -70,3 +70,7 @@ htmlcov/
 # Optional: 若 data/raw 或 data/cleaned 体量过大，可取消注释按需忽略
 # data/raw/
 # data/cleaned/
+
+.cursor/
+
+COMP*
