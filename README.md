@@ -4,6 +4,7 @@ sdk: gradio
 sdk_version: "4.0.0"
 app_file: app.py
 python_version: "3.10"
+pinned: false
 ---
 
 ## StoryWeaver (Hugging Face Spaces)
@@ -28,4 +29,3 @@ python app_gradio.py
 Notes:
 - Do **not** commit `.env` (already ignored by `.gitignore`).
 - The Space entrypoint is `app.py` (exports `demo`).
-
