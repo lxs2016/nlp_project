@@ -282,7 +282,9 @@ def build_ui() -> gr.Blocks:
     .err { color: var(--sw-danger); font-size: 0.92em; }
     """
 
-    with gr.Blocks(title="StoryWeaver", css=css) as app:
+    # Gradio 6+ moved `css` from Blocks() to launch(); we attach it to the app
+    # so both local `python app_gradio.py` and Spaces `app.py` can pass it at launch.
+    with gr.Blocks(title="StoryWeaver") as app:
         session_id = gr.State(value=None)
 
         with gr.Row():
@@ -434,13 +436,18 @@ def build_ui() -> gr.Blocks:
             api_name=False,
         )
 
+    setattr(app, "_storyweaver_css", css)
     return app
 
 
 def main() -> None:
     app = build_ui()
     port = int(os.environ.get("PORT", "7860"))
-    app.launch(server_name="0.0.0.0", server_port=port)
+    app.launch(
+        server_name="0.0.0.0",
+        server_port=port,
+        css=getattr(app, "_storyweaver_css", None),
+    )
 
 
 if __name__ == "__main__":
