@@ -1,6 +1,7 @@
 """MemoryRetriever: encode state + intent, retrieve Top-K from runtime memory (sentence-transformers)."""
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -12,6 +13,9 @@ _encoder = None
 def _get_encoder():
     global _encoder
     if _encoder is None:
+        if os.environ.get("STORYWEAVER_DISABLE_SBERT", "").strip() in {"1", "true", "yes"}:
+            _encoder = False
+            return _encoder
         try:
             from sentence_transformers import SentenceTransformer
             _encoder = SentenceTransformer("all-MiniLM-L6-v2")

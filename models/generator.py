@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from time import perf_counter
 from pathlib import Path
 from typing import Any
 
@@ -54,23 +55,35 @@ def _format_world(world: dict[str, Any]) -> dict[str, str]:
 OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 
 
-def _call_llm(system: str, user: str) -> str:
-    """Call LLM API if available (OpenAI or OpenRouter); otherwise return fallback JSON."""
-    api_key = (
-        os.environ.get("OPENROUTER_API_KEY")
-        or os.environ.get("OPENAI_API_KEY")
-        or os.environ.get("API_KEY")
-    )
+def _llm_config() -> dict[str, str]:
+    base_url = os.environ.get("OPENROUTER_API_BASE") or os.environ.get("OPENAI_API_BASE") or ""
+    model = os.environ.get("OPENROUTER_MODEL") or os.environ.get("OPENAI_MODEL", "gpt-3.5-turbo")
+    provider = "openrouter" if os.environ.get("OPENROUTER_API_KEY") else "openai"
+    if not base_url and os.environ.get("OPENROUTER_API_KEY"):
+        base_url = OPENROUTER_BASE
+    return {"provider": provider, "base_url": base_url, "model": model}
+
+
+def _call_llm(system: str, user: str, *, return_meta: bool = False):
+    """Call LLM API if available; otherwise return fallback JSON. Optionally returns meta."""
+    if os.environ.get("STORYWEAVER_FORCE_FALLBACK", "").strip() in {"1", "true", "yes"}:
+        api_key = ""
+    else:
+        api_key = (
+            os.environ.get("OPENROUTER_API_KEY")
+            or os.environ.get("OPENAI_API_KEY")
+            or os.environ.get("API_KEY")
+        )
+    cfg = _llm_config()
+    t0 = perf_counter()
     if not api_key:
         print("[Generator] 未配置 API key (OPENAI_API_KEY / OPENROUTER_API_KEY)，使用 fallback。")
     elif api_key:
         try:
             from openai import OpenAI
-            base_url = os.environ.get("OPENROUTER_API_BASE") or os.environ.get("OPENAI_API_BASE")
-            if not base_url and os.environ.get("OPENROUTER_API_KEY"):
-                base_url = OPENROUTER_BASE
+            base_url = cfg.get("base_url") or None
             client = OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
-            model = os.environ.get("OPENROUTER_MODEL") or os.environ.get("OPENAI_MODEL", "gpt-3.5-turbo")
+            model = cfg.get("model") or "gpt-3.5-turbo"
             r = client.chat.completions.create(
                 model=model,
                 messages=[
@@ -80,16 +93,24 @@ def _call_llm(system: str, user: str) -> str:
                 max_tokens=500,
             )
             if r.choices:
-                return (r.choices[0].message.content or "").strip()
+                text = (r.choices[0].message.content or "").strip()
+                t1 = perf_counter()
+                if return_meta:
+                    return text, {**cfg, "t_llm_ms": (t1 - t0) * 1000.0, "used_fallback": False}
+                return text
             print("[Generator] API 返回无 choices，使用 fallback。")
         except Exception as e:
             print("[Generator] LLM 调用异常，使用 fallback:", e)
     # Fallback: deterministic placeholder so pipeline runs
-    return json.dumps({
+    text = json.dumps({
         "narration": "你站在当前场景中，需要做出选择。",
         "choices": ["继续探索", "与角色交谈", "前往他处"],
         "state_updates": {"recent_events": ["玩家正在考虑下一步。"]},
     }, ensure_ascii=False)
+    t1 = perf_counter()
+    if return_meta:
+        return text, {**cfg, "t_llm_ms": (t1 - t0) * 1000.0, "used_fallback": True}
+    return text
 
 
 def _extract_json(text: str) -> dict | None:
@@ -115,6 +136,7 @@ def generate(
     suggested_choices: list[str],
     user_input: str,
     max_retries: int = 2,
+    return_meta: bool = False,
 ) -> tuple[str, list[str], dict[str, Any]]:
     """
     Return (narration, choices, state_updates). Retries on parse failure up to max_retries.
@@ -132,8 +154,12 @@ def generate(
     )
     last_raw = ""
     for _ in range(max_retries + 1):
-        raw = _call_llm(system, user)
-        last_raw = raw
+        if return_meta:
+            raw, _meta = _call_llm(system, user, return_meta=True)
+        else:
+            raw = _call_llm(system, user)
+            _meta = None
+        last_raw = raw  # noqa: F841
         parsed = _extract_json(raw)
         if parsed:
             narration = parsed.get("narration") or ""
@@ -145,6 +171,9 @@ def generate(
             state_updates = parsed.get("state_updates")
             if not isinstance(state_updates, dict):
                 state_updates = {}
+            if return_meta and isinstance(state_updates, dict) and _meta:
+                # Preserve state_updates schema while attaching non-game eval info
+                state_updates["_llm_meta"] = _meta
             return narration, choices, state_updates
     # Final fallback
     return (
