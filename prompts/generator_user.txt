@@ -1,0 +1,16 @@
+## 当前状态
+{state_summary}
+
+## 相关前情
+{retrieved_context}
+
+## 本步规划
+{plan_text}
+
+## 建议选项方向（可改写为具体选项）
+{suggested_choices}
+
+## 玩家输入/选择
+{user_input}
+
+请根据以上生成 JSON（narration, choices, state_updates）。

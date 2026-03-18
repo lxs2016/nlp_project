@@ -1,0 +1,14 @@
+{
+  "source": "SatorTenet/storyengine-dataset",
+  "huggingface_repo": "SatorTenet/storyengine-dataset",
+  "filename": "data/train.jsonl",
+  "total_examples": 3140,
+  "meta_type_distribution": {
+    "scene_continuation": 2000,
+    "genre_opening": 360,
+    "command_response": 200,
+    "fail_forward": 300,
+    "session_end": 200,
+    "init_sequence": 80
+  }
+}

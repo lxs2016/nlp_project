@@ -1,0 +1,12 @@
+# WorldBible 字段说明（供报告与后续模块引用）
+# 文件格式：YAML 或 JSON
+
+setting:        # 背景简述，多行字符串
+characters:     # 列表，每项含 name, role, traits
+locations:      # 列表，每项含 name, desc
+rules_forbidden:  # 列表，每条为一条禁忌或规则
+main_conflict: # 主线冲突，一句话或短段
+key_items:     # 可选，关键物品列表
+
+# 金标轨迹 (gold_*.json) 每步字段：
+# step_id, player_choice_text, expected_narration_summary

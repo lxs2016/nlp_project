@@ -1,0 +1,6 @@
+# Cleaning rules (for report)
+
+1. Encoding: UTF-8; invalid bytes replaced.
+2. Control characters: removed (except \n, \t kept before collapse).
+3. Whitespace: consecutive spaces/tabs/newlines collapsed to single space; paragraph breaks preserved as single newline.
+4. No change: Markdown, A/B/C option structure, or meta keys.

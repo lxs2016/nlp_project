@@ -1,0 +1,32 @@
+{
+  "trajectory_id": "gold_explore",
+  "world_bible": "world_main",
+  "description": "玩家先探索渡口与镇口，再决定是否接触长老",
+  "steps": [
+    {
+      "step_id": 1,
+      "player_choice_text": "先去河边渡口查看对岸情况",
+      "expected_narration_summary": "到达渡口，可见对岸有烟或光；渡船可用，但无人敢贸然过河。"
+    },
+    {
+      "step_id": 2,
+      "player_choice_text": "向渡口附近的村民打听消息",
+      "expected_narration_summary": "村民提到外乡人曾打听禁洞与对岸；有人见过对岸夜间火光。"
+    },
+    {
+      "step_id": 3,
+      "player_choice_text": "前往镇口寻找外乡人",
+      "expected_narration_summary": "外乡人出现，态度模糊；可询问其目的或邀请一同见长老。"
+    },
+    {
+      "step_id": 4,
+      "player_choice_text": "选择独自去见长老汇报渡口与外乡人的情况",
+      "expected_narration_summary": "长老听取汇报，对禁洞与对岸关系表示担忧，可给出新选项（调查禁洞或加强渡口戒备等）。"
+    },
+    {
+      "step_id": 5,
+      "player_choice_text": "接受长老委派，前往北山禁洞外围侦察（不进入）",
+      "expected_narration_summary": "在北山外围观察，可能发现异常痕迹或人影；回报长老后可作为评测终点。"
+    }
+  ]
+}

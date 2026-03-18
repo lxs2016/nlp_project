@@ -1,0 +1,32 @@
+{
+  "trajectory_id": "gold_negotiate",
+  "world_bible": "world_main",
+  "description": "玩家选择与长老协商、取得手令后前往禁洞的路线",
+  "steps": [
+    {
+      "step_id": 1,
+      "player_choice_text": "前往广场找陈长老商议",
+      "expected_narration_summary": "玩家到达广场，陈长老在场；长老提及河对岸异动与禁洞规矩，询问来意。"
+    },
+    {
+      "step_id": 2,
+      "player_choice_text": "说明想为村庄查探禁洞，请求长老许可",
+      "expected_narration_summary": "长老犹豫后同意，给予手令，并叮嘱不可深入、遇险即退。"
+    },
+    {
+      "step_id": 3,
+      "player_choice_text": "带上手令与火把前往北山禁洞",
+      "expected_narration_summary": "抵达洞口，持手令获准进入；洞内幽深，有微弱异光或声响。"
+    },
+    {
+      "step_id": 4,
+      "player_choice_text": "小心向洞内深处探索",
+      "expected_narration_summary": "发现古老符文或封印痕迹；剧情可在此设分支（触碰/回报长老等）。"
+    },
+    {
+      "step_id": 5,
+      "player_choice_text": "先退回村内向长老汇报所见",
+      "expected_narration_summary": "回到村庄向长老汇报；长老决定下一步（是否再探、是否渡河等），本轨迹结束。"
+    }
+  ]
+}
