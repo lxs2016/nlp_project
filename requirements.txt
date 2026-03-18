@@ -11,4 +11,4 @@ sentence-transformers>=2.2.0
 openai>=1.0.0
 
 # Gradio UI (System implementation)
-gradio>=4.0.0
+gradio>=4.44.1
