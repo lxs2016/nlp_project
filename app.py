@@ -14,6 +14,7 @@ demo = build_ui()
 if __name__ == "__main__":
     demo.launch(
         server_name="127.0.0.1",
+        ssr_mode=False,
         css=getattr(demo, "_storyweaver_css", None),
     )
 

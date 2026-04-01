@@ -1061,6 +1061,7 @@ def main() -> None:
     app.launch(
         server_name="0.0.0.0",
         server_port=port,
+        ssr_mode=False,
         css=getattr(app, "_storyweaver_css", None),
     )
 
